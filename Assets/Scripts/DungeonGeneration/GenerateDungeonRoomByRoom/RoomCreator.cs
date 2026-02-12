@@ -38,10 +38,6 @@ public class RoomCreator : MonoBehaviour
     /// <summary> All GameObjects created for the current level (for cleanup) </summary>
     private List<GameObject> currentLevelGameObjects;
 
-    /// <summary>
-    /// Called when the script initializes
-    /// Sets up the initial level
-    /// </summary>
     private void Start()
     {
         currentLevelGameObjects = new List<GameObject>();
@@ -52,13 +48,9 @@ public class RoomCreator : MonoBehaviour
     private void InitializeStartingRoom()
     {
         InitializeLevel();
-        
     }
 
-    /// <summary>
-    /// Initializes the current level by creating the starting room
-    /// </summary>
-    public void InitializeLevel()
+    private void CleanUpPreviousLevel()
     {
         // Clean up existing GameObjects from previous levels
         foreach(GameObject obj in currentLevelGameObjects)
@@ -75,7 +67,15 @@ public class RoomCreator : MonoBehaviour
         {
             DestroyAllChildren(levelRootTransform.gameObject);
         }
+    }
 
+    /// <summary>
+    /// Initializes the current level by creating the starting room
+    /// </summary>
+    public void InitializeLevel()
+    {
+        CleanUpPreviousLevel();
+        
         // Initialize if needed (for editor button use)
         if (currentLevel == null)
         {
