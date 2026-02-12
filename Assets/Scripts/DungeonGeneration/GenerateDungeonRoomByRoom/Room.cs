@@ -47,6 +47,23 @@ public class Room
         possibleExitDirections.Remove(enteranceDirection);
         return possibleExitDirections[Random.Range(0, possibleExitDirections.Count)];
     }
+
+    public Vector2Int GetExitPosition()
+    {
+        switch (exitDirection)
+        {
+            case directions.North:
+                return new Vector2Int(position.x + size.x / 2, position.y + size.y);
+            case directions.South:
+                return new Vector2Int(position.x + size.x / 2, position.y);
+            case directions.East:
+                return new Vector2Int(position.x + size.x, position.y + size.y / 2);
+            case directions.West:
+                return new Vector2Int(position.x, position.y + size.y / 2);
+            default:
+                return position; // Default to bottom-left corner if something goes wrong
+        }
+    }
 }
 
 public enum directions

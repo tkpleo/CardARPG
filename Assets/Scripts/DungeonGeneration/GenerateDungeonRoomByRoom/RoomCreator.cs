@@ -2,6 +2,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 /// <summary>
 /// MonoBehaviour that manages room creation and level progression for room-by-room dungeon generation
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 /// </summary>
 public class RoomCreator : MonoBehaviour
 {
+    [Header("Room Settings")]
     /// <summary> Minimum width for generated rooms </summary>
     [SerializeField] private int roomWidthMin;
     
@@ -20,11 +22,27 @@ public class RoomCreator : MonoBehaviour
     
     /// <summary> Maximum height for generated rooms </summary>
     [SerializeField] private int roomLengthMax;
+    [SerializeField] private Material floorMaterial;
+    [SerializeField] private Material wallMaterial;
+
+    [Header("Gap Settings")]
+    [SerializeField] private int gapWidthMin;
+    [SerializeField] private int gapWidthMax;
+    [SerializeField] private int gapLengthMin;
+    [SerializeField] private int gapLengthMax; 
+    [SerializeField] private int minGapCount;
+    [SerializeField] private int maxGapCount;
+    [SerializeField] private float gapOffsetFromWalls;
+    [SerializeField] private float gapOffsetFromEachOther;
+    [SerializeField] private Material gapMaterial;
     
+    [Header("Root Level Transform")]
     /// <summary> Parent transform to organize level GameObjects </summary>
     [SerializeField] private Transform levelRootTransform;
 
-    [SerializeField] private Material floorMaterial;
+    
+    private int roomLength;
+    private int roomWidth;
     
     /// <summary> Current level number/index </summary>
     private int currentLevelNumber = 1;
@@ -37,6 +55,7 @@ public class RoomCreator : MonoBehaviour
     
     /// <summary> All GameObjects created for the current level (for cleanup) </summary>
     private List<GameObject> currentLevelGameObjects;
+    private List<GameObject> gaps;
 
     private void Start()
     {
@@ -45,28 +64,11 @@ public class RoomCreator : MonoBehaviour
         InitializeStartingRoom();
     }
 
+    #region Level Initialization and Progression 
+
     private void InitializeStartingRoom()
     {
         InitializeLevel();
-    }
-
-    private void CleanUpPreviousLevel()
-    {
-        // Clean up existing GameObjects from previous levels
-        foreach(GameObject obj in currentLevelGameObjects)
-        {
-            if (obj != null)
-            {
-                DestroyImmediate(obj);
-            }
-        }
-        currentLevelGameObjects.Clear();
-
-        // Also destroy children under levelRootTransform for safety
-        if (levelRootTransform != null)
-        {
-            DestroyAllChildren(levelRootTransform.gameObject);
-        }
     }
 
     /// <summary>
@@ -86,9 +88,9 @@ public class RoomCreator : MonoBehaviour
         Debug.Log($"Initializing Level {currentLevelNumber}");
     
         // Create the first room at origin
-        int randomWidth = Random.Range(roomWidthMin, roomWidthMax + 1);
-        int randomLength = Random.Range(roomLengthMin, roomLengthMax + 1);
-        roomBuilder = new RoomBuilder(randomWidth, randomLength);
+        roomWidth = Random.Range(roomWidthMin, roomWidthMax + 1);
+        roomLength = Random.Range(roomLengthMin, roomLengthMax + 1);
+        roomBuilder = new RoomBuilder(roomWidth, roomLength);
         
         Room startingRoom = roomBuilder.BuildRoom(Vector2Int.zero);
         currentLevel.AddRoom(startingRoom);
@@ -99,6 +101,32 @@ public class RoomCreator : MonoBehaviour
 
         startingRoom.roomID = currentLevelNumber; // Assign room ID based on level number for tracking
     }
+
+    private void VisualizeRoom(Room room)
+    {
+        // Create parent GameObject for this room
+        GameObject roomObject = new GameObject($"Room_Level{currentLevelNumber}_{room.position}");
+        
+        if (levelRootTransform != null)
+            roomObject.transform.SetParent(levelRootTransform);
+        
+        roomObject.transform.position = new Vector3(room.position.x, 0, room.position.y);
+        
+        CreateFloor(room.position, room.position + room.size);
+        AttachWalls();
+        MakeRandomGapsInFloor(room.position, room.position + room.size, gapOffsetFromWalls, room);
+        
+        CreateEntrance(room);
+        CreateExit(room);
+        
+        currentLevelGameObjects.Add(roomObject);
+        
+        Debug.Log($"Visualized room at {room.position} with size {room.size}");
+    }
+
+    #endregion
+
+    #region Floor Creation
 
     private void CreateFloor(Vector2Int bottomLeftCorner, Vector2Int topRightCorner)
     {
@@ -138,15 +166,110 @@ public class RoomCreator : MonoBehaviour
         dungeonFloor.GetComponent<MeshRenderer>().material = floorMaterial;
         currentLevelGameObjects.Add(dungeonFloor);
 
-        // Wall positions will be calculated directly in AttachWalls()
     }
 
+    private void MakeRandomGapsInFloor(Vector2Int bottomLeftCorner, Vector2Int topRightCorner, float offsetFromWalls, Room room)
+    {
+        gaps = new List<GameObject>();
+
+        var gapCount = Random.Range(minGapCount, maxGapCount + 1);
+
+        for (int i = 0; i < gapCount; i++)
+        {
+            Vector2Int exitPos = room.GetExitPosition();
+
+            // Generate gap size first
+            Vector3 gapScale = new Vector3(Random.Range(gapWidthMin, gapWidthMax + 1), 0.02f, Random.Range(gapLengthMin, gapLengthMax + 1));
+            
+            // Find a valid position for this gap
+            Vector2 validPosition = FindValidGapPosition(bottomLeftCorner, topRightCorner, offsetFromWalls, exitPos, gapScale, gaps);
+            
+            Vector3 gapPosition = new Vector3(validPosition.x, 0.01f, validPosition.y); // Slightly above floor to avoid z-fighting
+            GameObject gap = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            gap.transform.position = gapPosition;
+            gap.transform.localScale = gapScale;
+            gap.GetComponent<Renderer>().material = gapMaterial; // Use the assigned gap material for visibility
+            BoxCollider boxCollider = gap.AddComponent<BoxCollider>();
+            boxCollider.size = new Vector3(1, 50, 1); // Ensure collider matches the visual size of the gap
+            boxCollider.center = new Vector3(0, 25, 0);
+            gap.name = "Gap_" + i;
+            currentLevelGameObjects.Add(gap);
+            gap.transform.parent = levelRootTransform; // Parent to level root for organization
+            gaps.Add(gap);
+        }
+    }
+
+    /// <summary>
+    /// Finds a valid position for a gap that doesn't overlap with the exit or other gaps
+    /// </summary>
+    private Vector2 FindValidGapPosition(Vector2Int bottomLeftCorner, Vector2Int topRightCorner, float offsetFromWalls, 
+        Vector2Int exitPos, Vector3 gapScale, List<GameObject> existingGaps)
+    {
+        int maxAttempts = 50; // Prevent infinite loop
+        
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            float randomX = Random.Range(bottomLeftCorner.x + offsetFromWalls, topRightCorner.x - offsetFromWalls);
+            float randomY = Random.Range(bottomLeftCorner.y + offsetFromWalls, topRightCorner.y - offsetFromWalls);
+            
+            // Check if this position is valid
+            if (IsValidGapPosition(randomX, randomY, gapScale, exitPos, existingGaps))
+            {
+                return new Vector2(randomX, randomY);
+            }
+        }
+        
+        // If we couldn't find a valid position after max attempts, return a random one (fallback)
+        Debug.LogWarning("Could not find non-overlapping position for gap after " + maxAttempts + " attempts");
+        return new Vector2(
+            Random.Range(bottomLeftCorner.x + offsetFromWalls, topRightCorner.x - offsetFromWalls),
+            Random.Range(bottomLeftCorner.y + offsetFromWalls, topRightCorner.y - offsetFromWalls)
+        );
+    }
+    
+    /// <summary>
+    /// Checks if a gap position is valid (doesn't overlap with exit or other gaps)
+    /// </summary>
+    private bool IsValidGapPosition(float posX, float posY, Vector3 gapScale, Vector2Int exitPos, List<GameObject> existingGaps)
+    {
+        // Add some padding around the exit position
+        float exitPadding = 2f;
+        
+        // Check if overlaps with exit position
+        if (Mathf.Abs(posX - exitPos.x) < (gapScale.x / 2 + exitPadding) &&
+            Mathf.Abs(posY - exitPos.y) < (gapScale.z / 2 + exitPadding))
+        {
+            return false;
+        }
+        
+        // Check if overlaps with any existing gaps
+        foreach (GameObject existingGap in existingGaps)
+        {
+            Vector3 otherPos = existingGap.transform.position;
+            Vector3 otherScale = existingGap.transform.localScale;
+            
+            // AABB collision check with small padding to prevent gaps from being too close
+            float padding = gapOffsetFromEachOther;
+            if (Mathf.Abs(posX - otherPos.x) < (gapScale.x + otherScale.x) / 2 + padding &&
+                Mathf.Abs(posY - otherPos.z) < (gapScale.z + otherScale.z) / 2 + padding)
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    #endregion
+
+    #region Wall Creation
     private GameObject CreatePrimitiveWall(Vector3 position, Vector3 scale)
     {
         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wall.transform.position = position;
         wall.transform.localScale = scale;
         wall.transform.parent = levelRootTransform; // Parent to the level root for organization
+        wall.GetComponent<Renderer>().material = wallMaterial; // Use the assigned wall material
         return wall;
     }
 
@@ -190,32 +313,14 @@ public class RoomCreator : MonoBehaviour
         rightWall.name = "RightWall";
         currentLevelGameObjects.Add(rightWall);
     }
-
+    #endregion
     /// <summary>
     /// Visualizes a room in the scene by creating a GameObject with floor and walls
     /// </summary>
     /// <param name="room">The room to visualize</param>
-    private void VisualizeRoom(Room room)
-    {
-        // Create parent GameObject for this room
-        GameObject roomObject = new GameObject($"Room_Level{currentLevelNumber}_{room.position}");
-        
-        if (levelRootTransform != null)
-            roomObject.transform.SetParent(levelRootTransform);
-        
-        roomObject.transform.position = new Vector3(room.position.x, 0, room.position.y);
-        
-        CreateFloor(room.position, room.position + room.size);
-        AttachWalls();
-        
-        CreateEntrance(room);
-        CreateExit(room);
-        
-        currentLevelGameObjects.Add(roomObject);
-        
-        Debug.Log($"Visualized room at {room.position} with size {room.size}");
-    }
+    
 
+    #region Entrance and Exit Creation
     private void CreateEntrance(Room room)
     {
         Vector3 entrancePosition = GetExitPosition(room, room.enteranceDirection);
@@ -256,7 +361,9 @@ public class RoomCreator : MonoBehaviour
                 return Vector3.zero; // Default case, should not happen
         }
     }
+    #endregion
 
+    #region Helper Methods
     private void DestroyAllChildren(GameObject parent)
     {
         if (parent == null) return;
@@ -281,6 +388,26 @@ public class RoomCreator : MonoBehaviour
             }
         }
     }
+
+    private void CleanUpPreviousLevel()
+    {
+        // Clean up existing GameObjects from previous levels
+        foreach(GameObject obj in currentLevelGameObjects)
+        {
+            if (obj != null)
+            {
+                DestroyImmediate(obj);
+            }
+        }
+        currentLevelGameObjects.Clear();
+
+        // Also destroy children under levelRootTransform for safety
+        if (levelRootTransform != null && levelRootTransform.childCount > 0)
+        {
+            DestroyAllChildren(levelRootTransform.gameObject);
+        }
+    }
+    #endregion
 }
 
 
