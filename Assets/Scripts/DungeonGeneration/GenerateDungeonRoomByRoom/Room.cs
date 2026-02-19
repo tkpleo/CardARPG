@@ -6,6 +6,7 @@ using System.Collections.Generic;
 /// Stores position, size, and exit points to other rooms
 /// </summary>
 public class Room
+    
 {
     /// <summary> The bottom-left corner position of the room </summary>
     public Vector2Int position;
@@ -32,6 +33,38 @@ public class Room
         this.roomID = roomID; // Default ID, can be set later
     }
 
+    public static Vector3 GetExitPosition(Room room, directions exitDirection)
+    {
+        Vector2Int roomPos = room.position;
+        Vector2Int roomSize = room.size;
+        
+        switch (exitDirection)
+        {
+            case directions.North:
+                return new Vector3(roomPos.x + roomSize.x / 2, 0, roomPos.y + roomSize.y);
+            case directions.South:
+                return new Vector3(roomPos.x + roomSize.x / 2, 0, roomPos.y);
+            case directions.East:
+                return new Vector3(roomPos.x + roomSize.x, 0, roomPos.y + roomSize.y / 2);
+            case directions.West:
+                return new Vector3(roomPos.x, 0, roomPos.y + roomSize.y / 2);
+            default:
+                return Vector3.zero; // Default case, should not happen
+        }
+    }
+
+    public static directions GetOppositeDirection(directions dir)
+    {
+        switch (dir)
+        {
+            case directions.North: return directions.South;
+            case directions.South: return directions.North;
+            case directions.East: return directions.West;
+            case directions.West: return directions.East;
+            default: return dir;
+        }
+    }
+
     /// <summary>
     /// Gets the center position of the room
     /// </summary>
@@ -41,10 +74,15 @@ public class Room
         return new Vector2(position.x + size.x / 2f, position.y + size.y / 2f);
     }
 
-    public directions GetRandomExitDirection(directions enteranceDirection)
+    public directions GetRandomExitDirection(directions enteranceDirection, directions? previousExitDirection = null)
     {
         List<directions> possibleExitDirections = new List<directions> { directions.North, directions.South, directions.East, directions.West };
         possibleExitDirections.Remove(enteranceDirection);
+        if (previousExitDirection.HasValue)
+        {
+            // Remove the previous exit direction as a possible exit for the new room
+            possibleExitDirections.Remove(previousExitDirection.Value);
+        }
         return possibleExitDirections[Random.Range(0, possibleExitDirections.Count)];
     }
 

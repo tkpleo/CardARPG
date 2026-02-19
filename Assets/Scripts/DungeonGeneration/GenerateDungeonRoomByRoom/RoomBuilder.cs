@@ -7,21 +7,35 @@ using System.Collections.Generic;
 /// </summary>
 public class RoomBuilder
 {
-    /// <summary> The width of the room to build </summary>
-    private int roomWidth;
-    
-    /// <summary> The length/height of the room to build </summary>
-    private int roomLength;
+    public RoomBuilder() {}
 
-    /// <summary>
-    /// Constructor to initialize the room builder with room dimensions
-    /// </summary>
-    /// <param name="roomWidth">Width of the room</param>
-    /// <param name="roomLength">Height of the room</param>
-    public RoomBuilder(int roomWidth, int roomLength)
+    public Room BuildNextRoom(Room currentRoom, int roomWidth, int roomLength)
     {
-        this.roomWidth = roomWidth;
-        this.roomLength = roomLength;
+        directions newEntranceDir = Room.GetOppositeDirection(currentRoom.exitDirection);
+        Vector2Int prevExitPos = currentRoom.GetExitPosition();
+        Vector2Int newRoomPos = prevExitPos;
+        switch (newEntranceDir)
+        {
+            case directions.North:
+                newRoomPos -= new Vector2Int(roomWidth / 2, roomLength);
+                break;
+            case directions.South:
+                newRoomPos -= new Vector2Int(roomWidth / 2, 0);
+                break;
+            case directions.East:
+                newRoomPos -= new Vector2Int(roomWidth, roomLength / 2);
+                break;
+            case directions.West:
+                newRoomPos -= new Vector2Int(0, roomLength / 2);
+                break;
+        }
+        Room nextRoom = BuildRoom(newRoomPos, roomWidth, roomLength);
+        nextRoom.enteranceDirection = newEntranceDir;
+        nextRoom.exitDirection = nextRoom.GetRandomExitDirection(
+            nextRoom.enteranceDirection,
+            currentRoom.exitDirection
+        );
+        return nextRoom;
     }
 
     /// <summary>
@@ -29,7 +43,7 @@ public class RoomBuilder
     /// </summary>
     /// <param name="position">The bottom-left corner position of the room</param>
     /// <returns>A new Room object with the specified dimensions and position</returns>
-    public Room BuildRoom(Vector2Int position)
+    public Room BuildRoom(Vector2Int position, int roomWidth, int roomLength)
     {
         return new Room(position, new Vector2Int(roomWidth, roomLength));
     }
