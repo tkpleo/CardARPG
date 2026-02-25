@@ -11,7 +11,7 @@ public class PlayerAttack : MonoBehaviour
     public void InitAttack()
     {
         bulletAbilityManager = GetComponent<BulletAbilityManager>();
-        GameObject spawned = ObjectPoolManager.SpawnObject(bulletPrefab, bulletSpawnPoint.transform.position, Player.transform.rotation, 10, ObjectPoolManager.PoolType.Bullets);
+        GameObject spawned = ObjectPoolManager.SpawnObject(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation, 10, ObjectPoolManager.PoolType.Bullets);
         Bullet spawnedBullet = spawned.GetComponent<Bullet>();
         if (spawnedBullet != null)
         {
