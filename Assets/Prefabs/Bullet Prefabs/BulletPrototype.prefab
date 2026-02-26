@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3861354540755203441}
   - component: {fileID: -8319516190478177250}
   - component: {fileID: 3678307428636272816}
-  - component: {fileID: -9198685452074547874}
   - component: {fileID: 3275632750693913860}
   - component: {fileID: 1848498293527812279}
   m_Layer: 0
@@ -32,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 4783138248681624283}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.74, z: 0}
-  m_LocalScale: {x: 0.10000001, y: 0.10000001, z: 0.10000001}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -133,27 +132,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2680e51823634534e9ee6af0d3f1430c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  bulletPrefab: {fileID: 4783138248681624283}
-  bulletSpeed: 20
-  bulletDamage: 1
+  bulletData: {fileID: 11400000, guid: 615d154ceedc6674f8582a875da2eace, type: 2}
   isStunBullet: 0
   isAOEBullet: 0
   AOERadius: 0
   isSlowBullet: 0
   isOpportunistBullet: 0
---- !u!114 &-9198685452074547874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4783138248681624283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ec67f46a177ff14da38312d143117ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ReturnSelfToPool
-  destroyTime: 2
 --- !u!135 &3275632750693913860
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -44,13 +44,13 @@ public class EnemyBehavior : MonoBehaviour
     }
 
     // Public entrypoint kept for external callers (e.g. Bullet collision)
-    public void TakeDamage(Bullet bullet)
+    public void TakeDamage(BulletBehavior bullet)
     {
         ApplyOnHitEffects(bullet, fromAOE: false);
     }
 
     // Internal helper - fromAOE prevents re-triggering the AOE when propagating damage
-    private void ApplyOnHitEffects(Bullet bullet, bool fromAOE)
+    private void ApplyOnHitEffects(BulletBehavior bullet, bool fromAOE)
     {
         damageTaken = bullet.bulletDamage;
         if (bullet.isStunBullet)

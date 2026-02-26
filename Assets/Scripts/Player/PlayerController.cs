@@ -10,8 +10,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float rotationSpeed = 360f;
 
-    [SerializeField] private float gravity = -9.81f;
-
     [Header("Dodge")]
     [SerializeField] private float dodgeCooldown = 1.5f;
     [SerializeField] private float dodgeTime = 0.5f;
@@ -20,8 +18,6 @@ public class PlayerController : MonoBehaviour
     [Header("Attack")]
     [SerializeField] private float attackCooldown = 0.5f;
     [SerializeField] private float attackTime = 0.2f;
-
-    [SerializeField] private float animationFinishTime = 0.9f;
 
     private bool _canDodge;
     private bool _isDodging;
@@ -79,18 +75,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        bool isGrounded = _characterController.isGrounded;
-
-        if (isGrounded && _velocity.y < 0)
-        {
-            _velocity.y = -2;
-        }
-
-        if (!isGrounded)
-        {
-            _velocity.y = gravity * Time.deltaTime;
-        }
-        
         GetInput();
 
         Look();
@@ -138,6 +122,9 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+
+    // Prevents player from being knocked into the air
+    private void LateUpdate() => transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
     private void CardPlay()
     {

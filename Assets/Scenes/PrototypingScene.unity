@@ -1475,13 +1475,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   speed: 5
   rotationSpeed: 180
-  gravity: -9.81
   dodgeCooldown: 1.5
   dodgeTime: 0.5
   dodgeSpeed: 6
   attackCooldown: 0.5
   attackTime: 0.2
-  animationFinishTime: 0.9
   mainCamera: {fileID: 192198252}
   groundLayer:
     serializedVersion: 2
@@ -1578,7 +1576,6 @@ MonoBehaviour:
   BA_Slow: 0
   BA_Opportunist: 0
   BA_GoldenGun: 0
-  GoldenGunActive: 0
   goldenGunVFX: {fileID: 7314526621825321143}
 --- !u!114 &395777131
 MonoBehaviour:
@@ -1593,8 +1590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   bulletSpawnPoint: {fileID: 733523108}
-  bulletPrefab: {fileID: 4783138248681624283, guid: 9748ff05c2bc14a48b584a6fb55dd7b3, type: 3}
-  Player: {fileID: 395777124}
+  bulletPrefab: {fileID: 11400000, guid: 615d154ceedc6674f8582a875da2eace, type: 2}
 --- !u!1 &456620149
 GameObject:
   m_ObjectHideFlags: 0
@@ -5454,6 +5450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1240aa51331494c4da0d74139b172b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectPoolManager
+  _objectPoolEmptyHolder: {fileID: 0}
 --- !u!1001 &1918723662
 PrefabInstance:
   m_ObjectHideFlags: 0

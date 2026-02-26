@@ -21,7 +21,7 @@ public class BulletAbilityManager : MonoBehaviour
     private float bulletDamage;
     private float bulletSpeed;
 
-    public void BulletBuilder(Bullet bullet)
+    public void BulletBuilder(BulletBehavior bullet)
     {
         bulletDamage = 1f;
         bulletSpeed = 10f;
@@ -55,8 +55,7 @@ public class BulletAbilityManager : MonoBehaviour
             bulletsToFire = 3;
             BA_GoldenGun = false;
         }
-        bullet.bulletSpeed = bulletSpeed;
-        bullet.bulletDamage = bulletDamage;
+
         bulletsToFire -= 1;
 
         if (bulletsToFire <= 0)
