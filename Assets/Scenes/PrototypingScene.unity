@@ -1461,31 +1461,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7958760914032664301, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
   m_PrefabInstance: {fileID: 4517877555881473610}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &395777132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 395777124}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64f6c0dbae6af5e41b0d70b6bb02b2ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
---- !u!114 &395777133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 395777124}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6819c8b1af35ae4793e631496c54337, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player.AssignStartingDeck
-  initialDeck: {fileID: 11400000, guid: ec1220370ce7b294b92d86e73c4a5251, type: 2}
 --- !u!1 &456620149
 GameObject:
   m_ObjectHideFlags: 0
@@ -5515,10 +5490,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1744957524577698058, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
-      propertyPath: bulletPrefab
-      value: 
-      objectReference: {fileID: 11400000, guid: 615d154ceedc6674f8582a875da2eace, type: 2}
     - target: {fileID: 1985064450278291740, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
       propertyPath: mainCamera
       value: 
@@ -5575,17 +5546,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 6989770332358274352, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7293828424779318359, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
-      insertIndex: 3
-      addedObject: {fileID: 395777132}
-    - targetCorrespondingSourceObject: {fileID: 7293828424779318359, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 395777133}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
 --- !u!1 &7314526621825321143 stripped
 GameObject:

@@ -150,11 +150,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 111b9c41393fc154b892f4747b4392a8, type: 3}
---- !u!1 &2025359516153571213 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6600872753826225222, guid: 111b9c41393fc154b892f4747b4392a8, type: 3}
-  m_PrefabInstance: {fileID: 5152266906896939979}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8190307985592561830 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3902745987203828589, guid: 111b9c41393fc154b892f4747b4392a8, type: 3}
@@ -861,16 +856,19 @@ PrefabInstance:
       addedObject: {fileID: 1985064450278291740}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1744957524577698058}
+      addedObject: {fileID: 6926462783058363936}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6989770332358274352}
+      addedObject: {fileID: 1744957524577698058}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6592799512765259598}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7917866232094500610}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8098006491342565568}
   m_SourcePrefab: {fileID: 100100000, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
 --- !u!1 &7293828424779318359 stripped
 GameObject:
@@ -914,13 +912,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   speed: 5
   rotationSpeed: 180
-  gravity: -9.81
   dodgeCooldown: 1.5
   dodgeTime: 0.5
   dodgeSpeed: 6
-  attackCooldown: 0.5
-  attackTime: 0.2
-  animationFinishTime: 0.9
   mainCamera: {fileID: 0}
   groundLayer:
     serializedVersion: 2
@@ -928,6 +922,20 @@ MonoBehaviour:
   mousePosition: {x: 0, y: 0}
   _CardCanvas: {fileID: 0}
   handManagerScript: {fileID: 0}
+  isMoving: 0
+  isDodging: 0
+--- !u!114 &6926462783058363936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7293828424779318359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64f6c0dbae6af5e41b0d70b6bb02b2ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
 --- !u!114 &1744957524577698058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,29 +948,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 446d9eeaa1515a14a9a78ebf4f06d087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  attackCooldown: 0.5
+  attackTime: 0.2
   bulletSpawnPoint: {fileID: 467241165831995763}
-  bulletPrefab: {fileID: 4783138248681624283, guid: 9748ff05c2bc14a48b584a6fb55dd7b3, type: 3}
-  Player: {fileID: 7293828424779318359}
---- !u!114 &6989770332358274352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7293828424779318359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ab0e40e6c266bd48b219da9e16843f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BulletAbilitytManager
-  BA_DamageIncrease: 0
-  BA_DamageMultiplier: 0
-  BA_Stun: 0
-  BA_AOE: 0
-  BA_Slow: 0
-  BA_Opportunist: 0
-  BA_GoldenGun: 0
-  goldenGunVFX: {fileID: 2025359516153571213}
+  bulletPrefab: {fileID: 11400000, guid: 615d154ceedc6674f8582a875da2eace, type: 2}
 --- !u!143 &6592799512765259598
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1010,6 +999,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8098006491342565568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7293828424779318359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6819c8b1af35ae4793e631496c54337, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.AssignStartingDeck
+  initialDeck: {fileID: 11400000, guid: ec1220370ce7b294b92d86e73c4a5251, type: 2}
 --- !u!4 &7958760914032664301 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cd10d3e643a58be409b26abd25df424c, type: 3}
