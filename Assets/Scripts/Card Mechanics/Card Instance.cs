@@ -16,7 +16,7 @@ namespace DeckBuilding.Cards
         public CardData data;
         public bool isUpgraded;
 
-        public string Name => data.name;
+        public string Name => data.cardName;
         public string Description => data.description;
         public Sprite Artwork => data.artwork;
 
