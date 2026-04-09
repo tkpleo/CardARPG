@@ -34,6 +34,7 @@ namespace DeckBuilding
         /// Discarded cards wait here until the draw pile refreshes.
         /// </summary>
         public List<CardInstance> DiscardPile { get; private set; } = new();
+
         public CardInstance HandLeft { get; private set; }
         public CardInstance HandRight { get; private set; }
 
@@ -91,6 +92,8 @@ namespace DeckBuilding
                 (pile[i], pile[j]) = (pile[j], pile[i]);
             }
         }
+
+        public void PublicDrawHand() => DrawHand();
 
         private void DrawHand()
         {
