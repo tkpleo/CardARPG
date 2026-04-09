@@ -15,11 +15,11 @@ public class PlayerHealthEditor : Editor
 
         if (GUILayout.Button("Heal (Static)"))
         {
-            PlayerHealth.Heal_Static(10f); // You can change the heal amount as needed
+            PlayerHealth.Heal_Static(1f); // You can change the heal amount as needed
         }
         if (GUILayout.Button("Take Damage (Static)"))
         {
-            PlayerHealth.TakeDamage_Static(10f); // You can change the damage amount as needed
+            PlayerHealth.TakeDamage_Static(1f); // You can change the damage amount as needed
         }
     }
 }
