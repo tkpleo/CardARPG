@@ -4,8 +4,9 @@ using System;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float currentHealth = 100f;
+    public const int startingMaxHealth = 3;
+    [SerializeField] private int maxHealth;
+    [SerializeField] private float currentHealth;
     private float oldHealth;
     private static PlayerHealth instance;
     public static float CurrentHealth { get; private set; }
@@ -14,6 +15,7 @@ public class PlayerHealth : MonoBehaviour
     public void Awake()
     {
         instance = this;
+        maxHealth = startingMaxHealth;
         currentHealth = maxHealth;
         oldHealth = currentHealth;
         CurrentHealth = currentHealth;
@@ -36,6 +38,31 @@ public class PlayerHealth : MonoBehaviour
         return instance;
     }
 
+    public static PlayerHealth IncreaseMaxHealth_Static(int amount)
+    {
+        instance.IncreaseMaxHealth(amount);
+        return instance;
+    }
+
+    private void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+    }
+
+    public static PlayerHealth FullHeal_Static()
+    {
+        instance.FullHeal();
+        return instance;
+    }
+
+    private void FullHeal()
+    {
+        oldHealth = currentHealth;
+        currentHealth = maxHealth;
+        CurrentHealth = currentHealth;
+        OnHealthChanged?.Invoke();
+    }
+
     private void Heal(float healAmount)
     {
         oldHealth = currentHealth;
@@ -43,6 +70,7 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth > maxHealth)
             currentHealth = maxHealth;
         CurrentHealth = currentHealth;
+        PlayerHealthBar.SetSegmentToGainHealth_Static();
         OnHealthChanged?.Invoke();
     }
 
@@ -52,6 +80,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damageAmount;
         CurrentHealth = currentHealth;
         OnHealthChanged?.Invoke();
+        PlayerHealthBar.SetSegmentToLoseHealth_Static();
         if (currentHealth <= 0f)
         {
             PlayerHealth.TryKillPlayer_Static();

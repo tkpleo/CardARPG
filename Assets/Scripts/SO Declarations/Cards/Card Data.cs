@@ -23,5 +23,7 @@ namespace DeckBuilding.Cards
 
         [Header("Card Mechanics")]
         public List<CardEffect> effects = new();
+        public bool isUpgradable;
+        public CardInstance upgradedVersion;
     }
 }

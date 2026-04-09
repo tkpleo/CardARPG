@@ -7,9 +7,12 @@ namespace Player
     using Attack;
     using DeckBuilding;
     using DeckBuilding.Cards;
+    using Unity.VisualScripting;
+    using UnityEngine.UI;
 
     [RequireComponent(typeof(CharacterController))]
     public class PlayerController : PlayerComponent
+        
     {
         #region Serialized Fields
         [SerializeField] private float speed = 5f;
@@ -19,6 +22,16 @@ namespace Player
         [SerializeField] private float dodgeCooldown = 1.5f;
         [SerializeField] private float dodgeTime = 0.5f;
         [SerializeField] private float dodgeSpeed = 7f;
+        [SerializeField] private Slider staminaSlider;
+
+        [Header("Stamina")]
+        [SerializeField] private float maxStamina = 1f; // 1f = full bar
+        [SerializeField] private int dashesPerFullStamina = 3;
+        [SerializeField] private float staminaRegenDelay = 1.5f;
+        [SerializeField] private float staminaRegenRate = 0.5f; // per second (fraction of bar)
+        private float currentStamina;
+        private float lastDashTime = -999f;
+        private float dashStaminaCost => maxStamina / dashesPerFullStamina;
         #endregion
 
         static class InputActions
@@ -53,9 +66,13 @@ namespace Player
         public event Action OnDodge;
 
 
-        protected override void Awake()
+        protected override void Awake()         
         {
             base.Awake();
+
+            currentStamina = maxStamina;
+            if (staminaSlider != null)
+                staminaSlider.value = 1f;
 
             _playerInputActions = new InputSystem_Actions();
             _characterController = GetComponent<CharacterController>();
@@ -86,7 +103,20 @@ namespace Player
 
             if (_dodgeInput && _canDodge && !isDodging)
             {
-                StartCoroutine(Dodge());
+                if (currentStamina >= dashStaminaCost)
+                {
+                    StartCoroutine(Dodge());
+                }
+                // else: not enough stamina to dash
+            }
+
+            // Regenerate stamina if not dashing and after delay
+            if (!isDodging && currentStamina < maxStamina && Time.time - lastDashTime > staminaRegenDelay)
+            {
+                currentStamina += staminaRegenRate * Time.deltaTime;
+                currentStamina = Mathf.Min(currentStamina, maxStamina);
+                if (staminaSlider != null)
+                    staminaSlider.value = currentStamina / maxStamina;
             }
 
             if (_canPlayCards && !isAttacking && !isDodging)
@@ -99,18 +129,68 @@ namespace Player
         // Prevents player from being knocked into the air
         private void LateUpdate() => transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
+        private IEnumerator FadeInStaminaBar()
+        {
+            if (staminaSlider != null)
+            {
+                staminaSlider.gameObject.SetActive(true);
+                CanvasGroup canvasGroup = staminaSlider.GetComponent<CanvasGroup>();
+                if (canvasGroup == null)
+                    canvasGroup = staminaSlider.gameObject.AddComponent<CanvasGroup>();
+
+                float elapsedTime = 0f;
+                while (elapsedTime < 0.25f)
+                {
+                    canvasGroup.alpha = Mathf.Lerp(0, 1, elapsedTime / 0.5f);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+                canvasGroup.alpha = 1f;
+            }
+        }
+
+        private IEnumerator FadeOutStaminaBar()
+        {
+            if (staminaSlider != null)
+            {
+                CanvasGroup canvasGroup = staminaSlider.GetComponent<CanvasGroup>();
+                if (canvasGroup == null)
+                    canvasGroup = staminaSlider.gameObject.AddComponent<CanvasGroup>();
+
+                float elapsedTime = 0f;
+                while (elapsedTime < 0.5f)
+                {
+                    canvasGroup.alpha = Mathf.Lerp(1, 0, elapsedTime / 0.5f);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+                canvasGroup.alpha = 0f;
+                staminaSlider.gameObject.SetActive(false);
+            }
+        }
+
 
         //Handles dodging animation and logic booleans
         private IEnumerator Dodge()
         {
-
             _canDodge = false;
             _canPlayCards = false;
             isDodging = true;
+
+            // Consume stamina for dash
+            StartCoroutine(FadeInStaminaBar());
+            currentStamina -= dashStaminaCost;
+            currentStamina = Mathf.Max(currentStamina, 0f);
+            if (staminaSlider != null)
+                staminaSlider.value = currentStamina / maxStamina;
+            lastDashTime = Time.time;
+            
+
             yield return new WaitForSeconds(dodgeTime);
             isDodging = false;
             _canPlayCards = true;
             yield return new WaitForSeconds(dodgeCooldown);
+            StartCoroutine(FadeOutStaminaBar());
             _canDodge = true;
         }
 
@@ -133,6 +213,7 @@ namespace Player
             if (isDodging == true)
             {
                 _characterController.Move(transform.forward * dodgeSpeed * Time.deltaTime);
+                return;
             }
 
             Vector3 mDirection = _input.magnitude * speed * Time.deltaTime * transform.forward + _velocity;
