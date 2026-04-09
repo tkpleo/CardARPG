@@ -15,7 +15,7 @@ namespace DeckBuilding
 {
     using Cards;
     using System.Linq;
-
+    
     public class DeckManager : Singleton<DeckManager>
     {
         /// <summary>
@@ -23,19 +23,19 @@ namespace DeckBuilding
         /// This is the deck that the player builds and modifies throughout the game.
         /// It is the deck that is used to generate the draw pile at the start of each combat.
         /// </summary>
-        private List<CardInstance> masterDeck = new();
+        public List<CardInstance> MasterDeck { get; private set; } = new();
 
         /// <summary>
         /// The queue of cards that the player will draw from during combat.
         /// </summary>
-        private List<CardInstance> drawPile = new();
+        public List<CardInstance> DrawPile { get; private set; } = new();
 
         /// <summary>
         /// Discarded cards wait here until the draw pile refreshes.
         /// </summary>
-        private List<CardInstance> discardPile = new();
-        private CardInstance handLeft;
-        private CardInstance handRight;
+        public List<CardInstance> DiscardPile { get; private set; } = new();
+        public CardInstance HandLeft { get; private set; }
+        public CardInstance HandRight { get; private set; }
 
         #region General Combat Methods
         public static void StartCombat() => Instance.PrivStartCombat();
@@ -44,13 +44,13 @@ namespace DeckBuilding
         private void PrivStartCombat()
         {
             // Assigns the draw pile to a new queue of card instances created from the master deck.
-            drawPile = masterDeck
+            DrawPile = MasterDeck
                 .Select(data => new CardInstance(data))
                 .ToList();
 
-            Shuffle(drawPile);
+            Shuffle(DrawPile);
 
-            discardPile.Clear();
+            DiscardPile.Clear();
 
             DrawHand();
         }
@@ -60,8 +60,8 @@ namespace DeckBuilding
 
         private void PrivEndCombat()
         {
-            drawPile.Clear();
-            discardPile.Clear();
+            DrawPile.Clear();
+            DiscardPile.Clear();
         }
         #endregion
 
@@ -69,7 +69,7 @@ namespace DeckBuilding
         public static void PlayCard(bool isLeftHand, CardContext context) => Instance.PrivPlayCard(isLeftHand, context);
         private void PrivPlayCard(bool isLeftHand, CardContext context)
         {
-            var card = isLeftHand ? handLeft : handRight;
+            var card = isLeftHand ? HandLeft : HandRight;
             if (card == null) return;
 
             card.Play(context);
@@ -77,9 +77,9 @@ namespace DeckBuilding
         public static void ReshuffleDiscardIntoDraw() => Instance.PrivReshuffleDiscardIntoDraw();
         private void PrivReshuffleDiscardIntoDraw()
         {
-            drawPile.AddRange(discardPile);
-            discardPile.Clear();
-            Shuffle(drawPile);
+            DrawPile.AddRange(DiscardPile);
+            DiscardPile.Clear();
+            Shuffle(DrawPile);
         }
         #endregion
 
@@ -96,9 +96,9 @@ namespace DeckBuilding
         {
             for (int i = 0; i < 2; i++)
             {
-                if (drawPile.Count == 0)
+                if (DrawPile.Count == 0)
                 {
-                    if (discardPile.Count == 0)
+                    if (DiscardPile.Count == 0)
                     {
                         // No cards left to draw
                         return;
@@ -106,14 +106,14 @@ namespace DeckBuilding
                     ReshuffleDiscardIntoDraw();
                 }
 
-                var card = drawPile[^1]; // Get the last card in the draw pile
-                drawPile.RemoveAt(drawPile.Count - 1); // Remove it from the draw pile
+                var card = DrawPile[^1]; // Get the last card in the draw pile
+                DrawPile.RemoveAt(DrawPile.Count - 1); // Remove it from the draw pile
 
                 // Add it to one of the slots in the player's hand.
                 if (i == 0)
-                    handLeft = card;
+                    HandLeft = card;
                 else
-                    handRight = card;
+                    HandRight = card;
             }
         }
 
@@ -121,7 +121,7 @@ namespace DeckBuilding
         {
             foreach (var card in cards)
             {
-                masterDeck.Add(new CardInstance(card));
+                MasterDeck.Add(new CardInstance(card));
             }
         }
     }

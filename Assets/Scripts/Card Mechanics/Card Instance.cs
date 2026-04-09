@@ -7,12 +7,18 @@
  * CardInstance also includes any functionality related to using or manipulating the physical card, like playing it or upgrading it.
  */
 
+using UnityEngine;
+
 namespace DeckBuilding.Cards
 {
     public class CardInstance
     {
         public CardData data;
         public bool isUpgraded;
+
+        public string Name => data.name;
+        public string Description => data.description;
+        public Sprite Artwork => data.artwork;
 
         public CardInstance(CardData data, bool isUpgraded = false)
         {
