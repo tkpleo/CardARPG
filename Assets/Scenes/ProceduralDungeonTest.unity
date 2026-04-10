@@ -95684,6 +95684,8 @@ GameObject:
   - component: {fileID: 1738330039}
   - component: {fileID: 1738330043}
   - component: {fileID: 1738330044}
+  - component: {fileID: 1738330045}
+  - component: {fileID: 1738330046}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -95806,6 +95808,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseManager
   pauseActionReference: {fileID: 591291834}
   pauseMenuUI: {fileID: 1243005817}
+--- !u!114 &1738330045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738330038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0423221b2dc47ac4b9d0ba88cc9f30bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LoadCardIntoHandUI
+  leftHand:
+    cardImage: {fileID: 1440920055}
+    cardNameText: {fileID: 1626144887}
+    cardDescriptionText: {fileID: 1204274784}
+  rightHand:
+    cardImage: {fileID: 587384588}
+    cardNameText: {fileID: 697418642}
+    cardDescriptionText: {fileID: 1691652369}
+  cardsInHand:
+  - isLeftHand: 1
+    cardImage: {fileID: 1440920055}
+    cardNameText: {fileID: 1626144887}
+    cardDescriptionText: {fileID: 1204274784}
+  - isLeftHand: 0
+    cardImage: {fileID: 587384588}
+    cardNameText: {fileID: 697418642}
+    cardDescriptionText: {fileID: 1691652369}
+--- !u!114 &1738330046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738330038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9183d0ee8e931543978206b16a7e736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToggleCardView
+  cardView: {fileID: 1894990630}
+  toggleCardViewAction: {fileID: 1802275444}
 --- !u!1 &1739629324
 GameObject:
   m_ObjectHideFlags: 0
@@ -98457,6 +98502,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799769084}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1802275444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: Player/ToggleCardView
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_ActionId: ae1cf8f2-28ff-4da9-94c6-6f79ad3d48d8
 --- !u!1 &1803644072
 GameObject:
   m_ObjectHideFlags: 0
