@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 00140453a3706354c8ffe13dd0531327, type: 3}
   m_Name: Shoot Basic
-  m_EditorClassIdentifier: Assembly-CSharp:DeckBuilding.Cards:ShootBullet
+  m_EditorClassIdentifier: Assembly-CSharp::DeckBuilding.Cards.ShootBullet
   value: 0
   bulletData: {fileID: 11400000, guid: 615d154ceedc6674f8582a875da2eace, type: 2}
