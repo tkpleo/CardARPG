@@ -16,4 +16,5 @@ MonoBehaviour:
   description: Shoot once with your gun
   artwork: {fileID: 0}
   effects:
-  - {fileID: 11400000, guid: cf123605801dc4e47882ef037941e83d, type: 2}
+  - {fileID: 11400000, guid: eb2237f5f2ec3e942977cff04bbaae25, type: 2}
+  isUpgradable: 0
