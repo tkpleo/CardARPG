@@ -14,23 +14,14 @@ namespace DeckBuilding.Cards
     public class CardInstance
     {
         public CardData data;
-        public bool isUpgraded;
 
         public string Name => data.cardName;
         public string Description => data.description;
         public Sprite Artwork => data.artwork;
 
-        public CardInstance(CardData data, bool isUpgraded = false)
-        {
-            this.data = data;
-            this.isUpgraded = isUpgraded;
-        }
+        public CardInstance(CardData data) => this.data = data;
 
-        public CardInstance(CardInstance other)
-        {
-            data = other.data;
-            isUpgraded = other.isUpgraded;
-        }
+        public CardInstance(CardInstance other) => this.data = other.data;
 
         public void Play(CardContext context)
         {
