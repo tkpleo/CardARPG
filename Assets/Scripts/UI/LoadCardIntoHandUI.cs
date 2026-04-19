@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 using DeckBuilding;
 using Player;
+using UnityEngine.InputSystem;
 
 [System.Serializable]
 public class HandUI
@@ -34,62 +35,59 @@ public class LoadCardIntoHandUI : MonoBehaviour
     private AssignStartingDeck startingDeckAssigner;
     public List<CardInHand> cardsInHand = new List<CardInHand>();
 
+    [SerializeField] private InputActionReference leftCardAction;
+    [SerializeField] private InputActionReference rightCardAction;
+    [SerializeField] private InputActionReference reloadAction;
+
+    private void OnEnable()
+    {
+        if (leftCardAction != null)
+            leftCardAction.action.performed += AttackPerformed;
+        else
+            Debug.LogWarning("Left Card Action Reference is not assigned in LoadCardIntoHandUI.");
+
+        if (rightCardAction != null)
+            rightCardAction.action.performed += AttackPerformed;
+        else
+            Debug.LogWarning("Right Card Action Reference is not assigned in LoadCardIntoHandUI.");
+
+        if (reloadAction != null)
+            reloadAction.action.performed += OnReloadPerformed;
+        else
+            Debug.LogWarning("Reload Action Reference is not assigned in LoadCardIntoHandUI.");
+    }
+
+    private void OnDisable()
+    {
+        if (leftCardAction != null)
+            leftCardAction.action.performed -= AttackPerformed;
+
+        if (rightCardAction != null)
+            rightCardAction.action.performed -= AttackPerformed;
+
+        if (reloadAction != null)
+            reloadAction.action.performed -= OnReloadPerformed;
+    }
+
+    private void AttackPerformed(InputAction.CallbackContext context)
+    {
+        RefreshHandUI();
+    }
+
+    private void OnReloadPerformed(InputAction.CallbackContext context)
+    {
+        RefreshHandUI();
+    }
+
     private void Start()
     {
         
         FindPlayerInScene();
         FindStartingDeckAssigner();
-        AddDummyCardsToMasterDeck();
-        // Draw the hand using DeckManager, then update the UI
-        DeckManager.Instance.GetType().GetMethod("DrawHand", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(DeckManager.Instance, null);
+        RefreshHandUI();
 
-    }
-
-    /// <summary>
-    /// Adds two dummy cards to the master deck for UI testing.
-    /// </summary>
-    private void AddDummyCardsToMasterDeck()
-    {
-        if (DeckManager.Instance.MasterDeck.Count == 0)
-        {
-            var dummyCardData1 = ScriptableObject.CreateInstance<CardData>();
-            SetDummyCardData(dummyCardData1, "Damage Boost", "Deal 2x damage.");
-
-            Debug.Log($"Dummy card 1: {dummyCardData1.cardName}, {dummyCardData1.description}");
-
-            var dummyCardData2 = ScriptableObject.CreateInstance<CardData>();
-            SetDummyCardData(dummyCardData2, "Multi Strike", "Shoot Twice at Once.");
-
-            Debug.Log($"Dummy card 2: {dummyCardData2.cardName}, {dummyCardData2.description}");
-
-            DeckManager.Instance.MasterDeck.Add(new CardInstance(dummyCardData1));
-            DeckManager.Instance.MasterDeck.Add(new CardInstance(dummyCardData2));
-            RefreshHandUI(new CardInstance(dummyCardData1), new CardInstance(dummyCardData2));
-        }
-    }
-
-    /// <summary>
-    /// Helper to set all fields on dummy CardData.
-    /// </summary>
-    private void SetDummyCardData(CardData cardData, string cardName, string cardDescription)
-    {
-        // Try to set both field and property in case CardData uses either
-        var type = cardData.GetType();
-        var cardNameField = type.GetField("cardName");
-        var cardNameProp = type.GetProperty("cardName");
-        if (cardNameField != null) cardNameField.SetValue(cardData, cardName);
-        if (cardNameProp != null && cardNameProp.CanWrite) cardNameProp.SetValue(cardData, cardName);
-
-        var descField = type.GetField("description");
-        var descProp = type.GetProperty("description");
-        if (descField != null) descField.SetValue(cardData, cardDescription);
-        if (descProp != null && descProp.CanWrite) descProp.SetValue(cardData, cardDescription);
-
-        // Optionally set artwork to null or a test sprite
-        var artField = type.GetField("artwork");
-        var artProp = type.GetProperty("artwork");
-        if (artField != null) artField.SetValue(cardData, null);
-        if (artProp != null && artProp.CanWrite) artProp.SetValue(cardData, null);
+        Debug.Log("Card in left hand at Start: " + (DeckManager.Instance.HandLeft != null ? DeckManager.Instance.HandLeft.Name : "None"));
+        Debug.Log("Card in right hand at Start: " + (DeckManager.Instance.HandRight != null ? DeckManager.Instance.HandRight.Name : "None"));
     }
 
     /// <summary>

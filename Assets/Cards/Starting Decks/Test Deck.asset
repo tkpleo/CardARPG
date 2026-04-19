@@ -15,8 +15,8 @@ MonoBehaviour:
   deckName: Test Deck
   startingCards:
   - {fileID: 11400000, guid: 6ed6f9d96dc70cc48bf602e430a98c0a, type: 2}
-  - {fileID: 11400000, guid: 6ed6f9d96dc70cc48bf602e430a98c0a, type: 2}
-  - {fileID: 11400000, guid: 6ed6f9d96dc70cc48bf602e430a98c0a, type: 2}
-  - {fileID: 11400000, guid: 6ed6f9d96dc70cc48bf602e430a98c0a, type: 2}
-  - {fileID: 11400000, guid: 6ed6f9d96dc70cc48bf602e430a98c0a, type: 2}
-  - {fileID: 11400000, guid: 6ed6f9d96dc70cc48bf602e430a98c0a, type: 2}
+  - {fileID: 11400000, guid: 93325da058b4c5f459a663ebf52fdb7f, type: 2}
+  - {fileID: 11400000, guid: 166cde31a1aade44c9973d084c4c4a1a, type: 2}
+  - {fileID: 11400000, guid: 93325da058b4c5f459a663ebf52fdb7f, type: 2}
+  - {fileID: 11400000, guid: 166cde31a1aade44c9973d084c4c4a1a, type: 2}
+  - {fileID: 11400000, guid: 93325da058b4c5f459a663ebf52fdb7f, type: 2}
