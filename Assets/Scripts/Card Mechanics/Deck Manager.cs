@@ -10,12 +10,34 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace DeckBuilding
 {
     using Cards;
     using System.Linq;
     
+    /// <summary>
+    /// A struct to represent the current state of the player's deck, including master deck, draw pile, discard pile, and hand.
+    /// </summary>
+    public struct DeckState
+    {
+        public List<CardInstance> MasterDeck;
+        public List<CardInstance> DrawPile;
+        public List<CardInstance> DiscardPile;
+        public CardInstance HandLeft;
+        public CardInstance HandRight;
+
+        public DeckState(DeckManager deckManager)
+        {
+            MasterDeck = deckManager.MasterDeck;
+            DrawPile = deckManager.DrawPile;
+            DiscardPile = deckManager.DiscardPile;
+            HandLeft = deckManager.HandLeft;
+            HandRight = deckManager.HandRight;
+        }
+    }
+
     public class DeckManager : Singleton<DeckManager>
     {
         /// <summary>
@@ -23,20 +45,27 @@ namespace DeckBuilding
         /// This is the deck that the player builds and modifies throughout the game.
         /// It is the deck that is used to generate the draw pile at the start of each combat.
         /// </summary>
-        public List<CardInstance> MasterDeck { get; private set; } = new();
+        private readonly List<CardInstance> MasterDeck = new();
 
         /// <summary>
         /// The queue of cards that the player will draw from during combat.
         /// </summary>
-        public List<CardInstance> DrawPile { get; private set; } = new();
+        private readonly List<CardInstance> DrawPile = new();
 
         /// <summary>
         /// Discarded cards wait here until the draw pile refreshes.
         /// </summary>
-        public List<CardInstance> DiscardPile { get; private set; } = new();
+        private readonly List<CardInstance> DiscardPile = new();
 
-        public CardInstance HandLeft { get; private set; }
-        public CardInstance HandRight { get; private set; }
+        private CardInstance HandLeft;
+        private CardInstance HandRight;
+
+        /// <summary>
+        /// Outputs the current state of the player's deck whenever it changes so other systems can react and update accordingly.
+        /// </summary>
+        public event Action<DeckState> OnDeckStateUpdate;
+
+        private void UpdateDeckState() => OnDeckStateUpdate?.Invoke(new DeckState(this));
 
         #region General Combat Methods
         public static void StartCombat() => Instance.PrivStartCombat();
@@ -54,6 +83,8 @@ namespace DeckBuilding
             DiscardPile.Clear();
 
             DrawHand();
+
+            UpdateDeckState();
         }
 
         // private nonstatic method to end the combat
@@ -75,6 +106,7 @@ namespace DeckBuilding
 
             card.Play(context);
         }
+
         public static void ReshuffleDiscardIntoDraw() => Instance.PrivReshuffleDiscardIntoDraw();
         private void PrivReshuffleDiscardIntoDraw()
         {
@@ -88,12 +120,10 @@ namespace DeckBuilding
         {
             for (int i = pile.Count - 1; i > 0; i--)
             {
-                int j = Random.Range(0, i + 1);
+                int j = UnityEngine.Random.Range(0, i + 1);
                 (pile[i], pile[j]) = (pile[j], pile[i]);
             }
         }
-
-        public void PublicDrawHand() => DrawHand();
 
         private void DrawHand()
         {
@@ -118,6 +148,8 @@ namespace DeckBuilding
                 else
                     HandRight = card;
             }
+
+            UpdateDeckState();
         }
 
         public void AddCardsToMasterDeck(CardData[] cards)
