@@ -7069,6 +7069,14 @@ PrefabInstance:
       propertyPath: handManagerScript
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2976793005118026403, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2976793005118026403, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7293828424779318359, guid: 60a9fc10ea37c514db1454c01be814d9, type: 3}
       propertyPath: m_Name
       value: PrototypePlayer
