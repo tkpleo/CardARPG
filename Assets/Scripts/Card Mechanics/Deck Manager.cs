@@ -28,13 +28,13 @@ namespace DeckBuilding
         public CardInstance HandLeft;
         public CardInstance HandRight;
 
-        public DeckState(DeckManager deckManager)
+        public DeckState(List<CardInstance> masterDeck, List<CardInstance> drawPile, List<CardInstance> discardPile, CardInstance handLeft, CardInstance handRight)
         {
-            MasterDeck = deckManager.MasterDeck;
-            DrawPile = deckManager.DrawPile;
-            DiscardPile = deckManager.DiscardPile;
-            HandLeft = deckManager.HandLeft;
-            HandRight = deckManager.HandRight;
+            MasterDeck = masterDeck;
+            DrawPile = drawPile;
+            DiscardPile = discardPile;
+            HandLeft = handLeft;
+            HandRight = handRight;
         }
     }
 
@@ -65,7 +65,7 @@ namespace DeckBuilding
         /// </summary>
         public event Action<DeckState> OnDeckStateUpdate;
 
-        private void UpdateDeckState() => OnDeckStateUpdate?.Invoke(new DeckState(this));
+        private void UpdateDeckState() => OnDeckStateUpdate?.Invoke(new DeckState(MasterDeck, DrawPile, DiscardPile, HandLeft, HandRight));
 
         #region General Combat Methods
         public static void StartCombat() => Instance.PrivStartCombat();
@@ -74,9 +74,8 @@ namespace DeckBuilding
         private void PrivStartCombat()
         {
             // Assigns the draw pile to a new queue of card instances created from the master deck.
-            DrawPile = MasterDeck
-                .Select(data => new CardInstance(data))
-                .ToList();
+            DrawPile.Clear();
+            DrawPile.AddRange(MasterDeck.Select(card => new CardInstance(card)));
 
             Shuffle(DrawPile);
 

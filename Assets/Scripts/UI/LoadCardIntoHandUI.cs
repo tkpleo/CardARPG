@@ -31,8 +31,6 @@ public class LoadCardIntoHandUI : MonoBehaviour
 {
     public HandUI leftHand;
     public HandUI rightHand;
-    private GameObject player = null;
-    private AssignStartingDeck startingDeckAssigner;
     public List<CardInHand> cardsInHand = new List<CardInHand>();
 
     [SerializeField] private InputActionReference leftCardAction;
@@ -41,105 +39,23 @@ public class LoadCardIntoHandUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (leftCardAction != null)
-            leftCardAction.action.performed += AttackPerformed;
-        else
-            Debug.LogWarning("Left Card Action Reference is not assigned in LoadCardIntoHandUI.");
-
-        if (rightCardAction != null)
-            rightCardAction.action.performed += AttackPerformed;
-        else
-            Debug.LogWarning("Right Card Action Reference is not assigned in LoadCardIntoHandUI.");
-
-        if (reloadAction != null)
-            reloadAction.action.performed += OnReloadPerformed;
-        else
-            Debug.LogWarning("Reload Action Reference is not assigned in LoadCardIntoHandUI.");
+        DeckManager.Instance.OnDeckStateUpdate += RefreshHandUI;
     }
 
     private void OnDisable()
     {
-        if (leftCardAction != null)
-            leftCardAction.action.performed -= AttackPerformed;
-
-        if (rightCardAction != null)
-            rightCardAction.action.performed -= AttackPerformed;
-
-        if (reloadAction != null)
-            reloadAction.action.performed -= OnReloadPerformed;
-    }
-
-    private void AttackPerformed(InputAction.CallbackContext context)
-    {
-        RefreshHandUI();
-    }
-
-    private void OnReloadPerformed(InputAction.CallbackContext context)
-    {
-        RefreshHandUI();
-    }
-
-    private void Start()
-    {
-        
-        FindPlayerInScene();
-        FindStartingDeckAssigner();
-        RefreshHandUI();
-
-        Debug.Log("Card in left hand at Start: " + (DeckManager.Instance.HandLeft != null ? DeckManager.Instance.HandLeft.Name : "None"));
-        Debug.Log("Card in right hand at Start: " + (DeckManager.Instance.HandRight != null ? DeckManager.Instance.HandRight.Name : "None"));
+        DeckManager.Instance.OnDeckStateUpdate -= RefreshHandUI;
     }
 
     /// <summary>
     /// Public method to refresh the hand UI. Call this after the hand changes.
     /// </summary>
-    public void RefreshHandUI(CardInstance newLeftCard = null, CardInstance newRightCard = null)
+    public void RefreshHandUI(DeckState deckState)
     {
-        // Clear old UI
-        cardsInHand.Clear();
-        if (leftHand != null)
-        {
-            leftHand.cardImage.sprite = null;
-            leftHand.cardNameText.text = "";
-            leftHand.cardDescriptionText.text = "";
-        }
-        if (rightHand != null)
-        {
-            rightHand.cardImage.sprite = null;
-            rightHand.cardNameText.text = "";
-            rightHand.cardDescriptionText.text = "";
-        }
-        // Load new hand
-        CardInstance leftCard = newLeftCard ?? DeckManager.Instance.HandLeft;
-        CardInstance rightCard = newRightCard ?? DeckManager.Instance.HandRight;
-        LoadCardIntoHand(leftCard, true);
-        LoadCardIntoHand(rightCard, false);
+        LoadCardIntoHand(deckState.HandLeft, true);
+        LoadCardIntoHand(deckState.HandRight, false);
     }
 
-    private void FindPlayerInScene()
-    {
-        player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null)
-        {
-            Debug.LogWarning("Player GameObject with tag 'Player' not found in the scene.");
-            return;
-        }
-    }
-
-    private void FindStartingDeckAssigner()
-    {
-        if (player == null)
-        {
-            Debug.LogWarning("Player GameObject is not assigned. Cannot find AssignStartingDeck component.");
-            return;
-        }
-
-        startingDeckAssigner = player.GetComponent<AssignStartingDeck>();
-        if (startingDeckAssigner == null)
-        {
-            Debug.LogWarning("AssignStartingDeck component not found on Player GameObject.");
-        }
-    }
 
     private void LoadCardIntoHand(CardInstance card, bool isLeftHand)
     {
