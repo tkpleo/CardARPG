@@ -86,8 +86,8 @@ public class LoadCardIntoHandUI : MonoBehaviour
         FindStartingDeckAssigner();
         RefreshHandUI();
 
-        Debug.Log("Card in left hand at Start: " + (DeckManager.Instance.HandLeft != null ? DeckManager.Instance.HandLeft.Name : "None"));
-        Debug.Log("Card in right hand at Start: " + (DeckManager.Instance.HandRight != null ? DeckManager.Instance.HandRight.Name : "None"));
+       // Debug.Log("Card in left hand at Start: " + (DeckManager.Instance.HandLeft != null ? DeckManager.Instance.HandLeft.Name : "None"));
+        // Debug.Log("Card in right hand at Start: " + (DeckManager.Instance.HandRight != null ? DeckManager.Instance.HandRight.Name : "None"));
     }
 
     /// <summary>
@@ -110,10 +110,10 @@ public class LoadCardIntoHandUI : MonoBehaviour
             rightHand.cardDescriptionText.text = "";
         }
         // Load new hand
-        CardInstance leftCard = newLeftCard ?? DeckManager.Instance.HandLeft;
-        CardInstance rightCard = newRightCard ?? DeckManager.Instance.HandRight;
-        LoadCardIntoHand(leftCard, true);
-        LoadCardIntoHand(rightCard, false);
+       // CardInstance leftCard = newLeftCard ?? DeckManager.Instance.HandLeft;
+      //  CardInstance rightCard = newRightCard ?? DeckManager.Instance.HandRight;
+       // LoadCardIntoHand(leftCard, true);
+       // LoadCardIntoHand(rightCard, false);
     }
 
     private void FindPlayerInScene()
