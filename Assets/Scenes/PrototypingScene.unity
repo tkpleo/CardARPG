@@ -1915,9 +1915,9 @@ RectTransform:
   - {fileID: 955856026}
   m_Father: {fileID: 1633004369}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -785, y: -478}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -785, y: 275}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &456620149
@@ -2490,20 +2490,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 895eac3bff92e5f4783d3d28c84ee34b, type: 3}
---- !u!114 &621532197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/Right Card
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: 02638a73-c94e-4028-ab14-0e63cfbb450e
 --- !u!1 &676182648
 GameObject:
   m_ObjectHideFlags: 0
@@ -3949,20 +3935,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135179806}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1196456889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/Left Card
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: c1d5ead9-23d8-42a8-be16-a898212a5ece
 --- !u!1 &1240727543
 GameObject:
   m_ObjectHideFlags: 0
@@ -5527,7 +5499,6 @@ GameObject:
   - component: {fileID: 1633004366}
   - component: {fileID: 1633004365}
   - component: {fileID: 1633004364}
-  - component: {fileID: 1633004363}
   - component: {fileID: 1633004362}
   m_Layer: 5
   m_Name: Canvas
@@ -5543,7 +5514,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1633004361}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9183d0ee8e931543978206b16a7e736, type: 3}
   m_Name: 
@@ -5551,38 +5522,6 @@ MonoBehaviour:
   cardView: {fileID: 1694989983}
   cardRosterIndicator: {fileID: 454270948}
   toggleCardViewAction: {fileID: 1494190117}
---- !u!114 &1633004363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1633004361}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0423221b2dc47ac4b9d0ba88cc9f30bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LoadCardIntoHandUI
-  leftHand:
-    cardImage: {fileID: 261838833}
-    cardNameText: {fileID: 1815644589}
-    cardDescriptionText: {fileID: 979551577}
-  rightHand:
-    cardImage: {fileID: 392074194}
-    cardNameText: {fileID: 1240727545}
-    cardDescriptionText: {fileID: 910835038}
-  cardsInHand:
-  - isLeftHand: 1
-    cardImage: {fileID: 261838833}
-    cardNameText: {fileID: 1815644589}
-    cardDescriptionText: {fileID: 979551577}
-  - isLeftHand: 0
-    cardImage: {fileID: 392074194}
-    cardNameText: {fileID: 1240727545}
-    cardDescriptionText: {fileID: 910835038}
-  leftCardAction: {fileID: 1196456889}
-  rightCardAction: {fileID: 621532197}
-  reloadAction: {fileID: 1651799461}
 --- !u!114 &1633004364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5715,7 +5654,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1647031523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5859,20 +5798,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1647154779}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1651799461
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
-  m_Name: Player/Reload
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
-  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_ActionId: 36d6dbe5-8014-4472-80a0-1cc9d449002a
 --- !u!114 &1656458710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6009,6 +5934,7 @@ GameObject:
   - component: {fileID: 1694989986}
   - component: {fileID: 1694989985}
   - component: {fileID: 1694989984}
+  - component: {fileID: 1694989987}
   m_Layer: 5
   m_Name: CardInHandUI
   m_TagString: Untagged
@@ -6073,9 +5999,33 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -104}
+  m_AnchoredPosition: {x: 0, y: 100}
   m_SizeDelta: {x: 1920, y: 206.9809}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1694989987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694989983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0423221b2dc47ac4b9d0ba88cc9f30bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LoadCardIntoHandUI
+  leftHand:
+    cardImage: {fileID: 261838833}
+    cardNameText: {fileID: 1815644589}
+    cardDescriptionText: {fileID: 979551577}
+  rightHand:
+    cardImage: {fileID: 392074194}
+    cardNameText: {fileID: 1240727545}
+    cardDescriptionText: {fileID: 910835038}
+  deckCounter:
+    countText: {fileID: 1958403886}
+  discardCounter:
+    countText: {fileID: 974490281}
 --- !u!1 &1717290489
 GameObject:
   m_ObjectHideFlags: 0
