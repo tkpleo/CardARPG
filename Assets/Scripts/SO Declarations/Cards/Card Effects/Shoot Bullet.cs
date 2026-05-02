@@ -17,13 +17,17 @@ namespace DeckBuilding.Cards
     {
         [Description("The data of the bullet to shoot.")]
         public BulletData bulletData;
+        [Description("The deviation of degrees for the bullet's accuracy.")]
+        public float accuracy = 0;
+        [Description("The number of bullets to shoot in a single attack.")]
+        public int bulletCount = 1;
 
         public override void ExecuteEffect(CardContext context)
         {
             if (!Player.TryGetComponent(out PlayerAttack _PlayerAttack))
                 throw new System.Exception("Player does not have a PlayerAttack component.");
 
-            _PlayerAttack.InitAttack(bulletData); // Shoot the bullet specified by bulletData
+            _PlayerAttack.InitAttack(bulletData, accuracy, bulletCount); // Shoot the bullet specified by bulletData with the specified accuracy
         }
     }
 }

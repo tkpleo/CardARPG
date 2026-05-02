@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cec11be242dfab4439ba9bc8ca5a26c4, type: 3}
-  m_Name: Double Shot
+  m_Name: Ratshot
   m_EditorClassIdentifier: Assembly-CSharp::DeckBuilding.Cards.CardData
-  cardName: Double Shot
-  description: Shot twice the bullets
+  cardName: Ratshot
+  description: Shoot a spray of pellets
   artwork: {fileID: 0}
   effects:
-  - {fileID: 11400000, guid: eb2237f5f2ec3e942977cff04bbaae25, type: 2}
-  - {fileID: 11400000, guid: eb2237f5f2ec3e942977cff04bbaae25, type: 2}
+  - {fileID: 11400000, guid: 81d8a4679d979494185c0b38bd6435f6, type: 2}
   isUpgradable: 0
