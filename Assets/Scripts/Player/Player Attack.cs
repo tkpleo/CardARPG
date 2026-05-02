@@ -27,6 +27,8 @@ namespace Player.Attack
 
         private PlayerController movement;
 
+        Vector3 spawnPosition => bulletSpawnPoint != null ? bulletSpawnPoint.transform.position : transform.position;
+
         private void Start()
         {
             if (Player.TryGetComponent(out PlayerController _movement)) movement = _movement;
@@ -39,7 +41,7 @@ namespace Player.Attack
             else Debug.LogWarning("Bullet prefab not assigned in PlayerAttack.");
         }
 
-        public void InitAttack(BulletData bullet)
+        public void InitAttack(BulletData bullet, float Accuracy = 0, int bulletCount = 1)
         {
             // Preliminary checks to avoid errors - ensure all necessary references are assigned
             if (bulletSpawnPoint == null) return;
@@ -57,15 +59,31 @@ namespace Player.Attack
 
             StartCoroutine(Attack());
 
+            // Shoot the specified number of bullets with the given accuracy
+            for (int i = 0; i < bulletCount; i++)
+                 Shoot(bullet, Accuracy);
+            
+        }
+
+        private void Shoot(BulletData bullet, float Accuracy)
+        {
             // Use provided bullet data or default prefab if none given
             BulletData bulletData = bullet ?? bulletPrefab;
+
+            // Apply accuracy deviation
+            Quaternion bulletRotation = transform.rotation;
+            if (Accuracy != 0)
+            {
+                float deviation = Random.Range(-Accuracy, Accuracy);
+                bulletRotation *= Quaternion.Euler(0, deviation, 0);
+            }
 
             // Get a pooled bullet (inactive)
             BulletBehavior pooledBullet = BulletPooler.GetObject(bulletData);
             if (pooledBullet == null) return;
 
             // Position and rotate before activation so transform is correct when enabled
-            pooledBullet.transform.SetPositionAndRotation(bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+            pooledBullet.transform.SetPositionAndRotation(spawnPosition, bulletRotation);
 
             // Activate (this triggers OnEnable in BulletBehavior to apply default BulletData)
             pooledBullet.gameObject.SetActive(true);
@@ -77,7 +95,6 @@ namespace Player.Attack
             yield return new WaitForSeconds(attackTime);
             isAttacking = false;
             yield return new WaitForSeconds(attackCooldown);
-
         }
     }
 }
