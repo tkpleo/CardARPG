@@ -79,12 +79,5 @@ namespace Player.Attack
             yield return new WaitForSeconds(attackCooldown);
 
         }
-
-
-        /*
-        
-
-                
-            */
     }
 }

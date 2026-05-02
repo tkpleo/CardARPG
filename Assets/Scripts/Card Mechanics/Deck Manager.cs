@@ -63,7 +63,7 @@ namespace DeckBuilding
         /// <summary>
         /// Outputs the current state of the player's deck whenever it changes so other systems can react and update accordingly.
         /// </summary>
-        public event Action<DeckState> OnDeckStateUpdate;
+        public static event Action<DeckState> OnDeckStateUpdate;
 
         private void UpdateDeckState() => OnDeckStateUpdate?.Invoke(new DeckState(MasterDeck, DrawPile, DiscardPile, HandLeft, HandRight));
 
@@ -104,11 +104,15 @@ namespace DeckBuilding
             if (card == null) return;
 
             card.Play(context);
+
+            DrawHand();
         }
 
         public static void ReshuffleDiscardIntoDraw() => Instance.PrivReshuffleDiscardIntoDraw();
         private void PrivReshuffleDiscardIntoDraw()
         {
+            Debug.Log("Reshuffling discard pile into draw pile...");
+
             DrawPile.AddRange(DiscardPile);
             DiscardPile.Clear();
             Shuffle(DrawPile);
@@ -126,6 +130,13 @@ namespace DeckBuilding
 
         private void DrawHand()
         {
+            if (HandLeft != null)
+                DiscardPile.Add(HandLeft);
+
+            if (HandRight != null)
+                DiscardPile.Add(HandRight);
+
+            // Draw two cards from the draw pile
             for (int i = 0; i < 2; i++)
             {
                 if (DrawPile.Count == 0)
@@ -135,6 +146,7 @@ namespace DeckBuilding
                         // No cards left to draw
                         return;
                     }
+
                     ReshuffleDiscardIntoDraw();
                 }
 
