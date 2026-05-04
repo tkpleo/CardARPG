@@ -41,13 +41,13 @@ public class Room
         switch (exitDirection)
         {
             case directions.North:
-                return new Vector3(roomPos.x + roomSize.x / 2, 0, roomPos.y + roomSize.y);
+                return new Vector3(roomPos.x + roomSize.x / 2, 1f, roomPos.y + roomSize.y);
             case directions.South:
-                return new Vector3(roomPos.x + roomSize.x / 2, 0, roomPos.y);
+                return new Vector3(roomPos.x + roomSize.x / 2, 1f, roomPos.y);
             case directions.East:
-                return new Vector3(roomPos.x + roomSize.x, 0, roomPos.y + roomSize.y / 2);
+                return new Vector3(roomPos.x + roomSize.x, 1f, roomPos.y + roomSize.y / 2);
             case directions.West:
-                return new Vector3(roomPos.x, 0, roomPos.y + roomSize.y / 2);
+                return new Vector3(roomPos.x, 1f, roomPos.y + roomSize.y / 2);
             default:
                 return Vector3.zero; // Default case, should not happen
         }
@@ -102,7 +102,22 @@ public class Room
                 return position; // Default to bottom-left corner if something goes wrong
         }
     }
-}
+    public Vector2Int GetEntrancePosition()
+    {
+        switch (enteranceDirection)
+        {
+            case directions.North:
+                return new Vector2Int(position.x + size.x / 2, position.y + size.y);
+            case directions.South:
+                return new Vector2Int(position.x + size.x / 2, position.y);
+            case directions.East:
+                return new Vector2Int(position.x + size.x, position.y + size.y / 2);
+            case directions.West:
+                return new Vector2Int(position.x, position.y + size.y / 2);
+            default:
+                return new Vector2Int(0, 0);
+        }
+    }}
 
 public enum directions
 {

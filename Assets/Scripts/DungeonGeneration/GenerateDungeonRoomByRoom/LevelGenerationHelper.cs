@@ -37,8 +37,15 @@ public class LevelGenerationHelper : MonoBehaviour
         {
             if (obj != null)
             {
-                Destroy(obj);
-            } 
+                if (Application.isEditor && !Application.isPlaying)
+                {
+                    DestroyImmediate(obj);
+                }
+                else
+                {
+                    Destroy(obj);
+                }
+            }
             else
             {
                 Debug.LogWarning("Attempted to destroy a null GameObject reference during cleanup.");
