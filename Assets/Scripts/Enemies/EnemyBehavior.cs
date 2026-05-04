@@ -15,11 +15,23 @@ public class EnemyBehavior : MonoBehaviour
     
     [Header("Health")]
     public float maxHealth = 20f;
-    public float currentHealth = 20f;
-    public float currentHP => currentHealth;
+    [SerializeField] private float _currentHealth = 20f;
+    public float currentHealth
+    {
+        get => _currentHealth;
+        set
+        {
+            _currentHealth = Mathf.Clamp(value, 0f, maxHealth);
+            if (Application.isPlaying)
+            {
+                CheckHealthThreshold();
+            }
+        }
+    }
+    public float currentHP => _currentHealth;
     public float maxHP => maxHealth;
 
-    public bool IsAlive => currentHealth > 0f && gameObject != null && gameObject.activeInHierarchy;
+    public bool IsAlive => _currentHealth > 0f && gameObject != null && gameObject.activeInHierarchy;
 
     [Header("Targeting")]
     protected float detectionRange = 10f;
@@ -84,16 +96,33 @@ public class EnemyBehavior : MonoBehaviour
 
     public virtual void SetHealth(float value)
     {
-        currentHealth = Mathf.Clamp(value, 0, maxHealth);
-        CheckHealthThreshold();
+        currentHealth = value;
     }
 
     public virtual void CheckHealthThreshold()
     {
         if (currentHealth <= 0f)
         {
-            //die
-        };
+            PerformDeathCleanup();
+            HandleDeathCleanup?.Invoke();
+        }
+    }
+
+    private void Start()
+    {
+        if (currentHealth <= 0f)
+        {
+            CheckHealthThreshold();
+        }
+    }
+
+    private void OnValidate()
+    {
+        _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
+        if (Application.isPlaying)
+        {
+            CheckHealthThreshold();
+        }
     }
 
     protected virtual void DisableCollidersForDeath()
@@ -173,6 +202,27 @@ public class EnemyBehavior : MonoBehaviour
             return collider.radius;
 
         return collider.radius * maxScale;
+    }
+
+    public event Action HandleDeathCleanup;
+
+    private void PerformDeathCleanup()
+    {
+        DisableCollidersForDeath();
+        DisableAttackHitbox();
+        StartCoroutine(WaitToDestroy());
+    }
+
+    private void KillEnemy()
+    {
+        Destroy(gameObject);
+    }
+
+    private IEnumerator WaitToDestroy()
+    {
+        this.gameObject.transform.localScale = Vector3.zero; // Instantly hide the enemy
+        yield return new WaitForSeconds(0.5f);
+        KillEnemy();
     }
 }
 

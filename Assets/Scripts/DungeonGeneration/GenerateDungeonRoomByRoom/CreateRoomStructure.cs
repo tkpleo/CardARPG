@@ -119,4 +119,5 @@ public class CreateRoomStructure : MonoBehaviour
         exitObject.transform.parent = levelRootTransform;
         currentLevelGameObjects.Add(exitObject);
     }
+
 }

@@ -16,7 +16,7 @@ public class LoadingScreen : MonoBehaviour
 
     private IEnumerator TurnLoadingScreenOn(float fadeDuration, GameObject loadingScreen)
     {
-        Color color = loadingScreen.GetComponent<Image>().material.color;
+        Color color = loadingScreen.GetComponent<Image>().color;
         color.a = 0f; // Start fully transparent
 
         loadingScreen.gameObject.SetActive(true); // Ensure the loading screen is active before fading in
@@ -25,26 +25,26 @@ public class LoadingScreen : MonoBehaviour
         while (elapsedTime < fadeDuration)
         {
             color.a = Mathf.Lerp(0f, 1f, elapsedTime / fadeDuration);
-            loadingScreen.GetComponent<Image>().material.color = color;
+            loadingScreen.GetComponent<Image>().color = color;
             elapsedTime += Time.unscaledDeltaTime;
             yield return null;
         }
-        loadingScreen.GetComponent<Image>().material.color = new Color(color.r, color.g, color.b, 1f); // Ensure it's fully visible at the end
+        loadingScreen.GetComponent<Image>().color = new Color(color.r, color.g, color.b, 1f); // Ensure it's fully visible at the end
     }
 
     private IEnumerator TurnLoadingScreenOff(float fadeDuration, GameObject loadingScreen)
     {
-        Color color = loadingScreen.GetComponent<Image>().material.color;
+        Color color = loadingScreen.GetComponent<Image>().color;
 
         float elapsedTime = 0f;
         while (elapsedTime < fadeDuration)
         {
             color.a = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
-            loadingScreen.GetComponent<Image>().material.color = color;
+            loadingScreen.GetComponent<Image>().color = color;
             elapsedTime += Time.unscaledDeltaTime;
             yield return null;
         }
-        loadingScreen.GetComponent<Image>().material.color = new Color(color.r, color.g, color.b, 0f); // Ensure it's fully invisible at the end
+        loadingScreen.GetComponent<Image>().color = new Color(color.r, color.g, color.b, 0f); // Ensure it's fully invisible at the end
         loadingScreen.gameObject.SetActive(false); // Deactivate the loading screen after fading out
     }
 
