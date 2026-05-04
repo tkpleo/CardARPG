@@ -4,155 +4,176 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyBehavior : MonoBehaviour
 {
-    public bool isMovingXEnemy = false;
-    public bool isMovingZEnemy = false;
+
+    [HideInInspector] 
+    public NavMeshAgent agent;
+
+    
+    [Header("Health")]
+    public float maxHealth = 20f;
+    public float currentHealth = 20f;
+    public float currentHP => currentHealth;
+    public float maxHP => maxHealth;
+
+    public bool IsAlive => currentHealth > 0f && gameObject != null && gameObject.activeInHierarchy;
+
+    [Header("Targeting")]
+    protected float detectionRange = 10f;
+    public bool showDetectionGizmo = true;
+    protected SphereCollider detectionCollider;
+
+    [Header("Attack")]
+    public float damage = 5f;
+    public BoxCollider attackCollider;
+    public Vector3 attackBoxSize = new Vector3(2f, 1f, 2f);
+    public float attackBoxDistance = 1.5f;
+    public float attackInterval = 1f;
+    public float attackDuration = 0.5f;
+    public bool showAttackGizmo = true;
+
+    [HideInInspector]
+    public bool isAttackBoxActive = false;
+    [HideInInspector]
+    public bool hasFiredLowHealth = false;
+
+    [Header("Movement")]
     public float moveSpeed = 2f;
-    public float moveDistance = 2f;
-    public float damageTaken = 0f;
-    public TextMeshProUGUI damageText;
-    public GameObject AOEExplosionVFX;
-    public GameObject slowAOEExplosionVFX;
-    public GameObject stunAOEExplosionVFX;
+    public bool isMoving = false;
 
+    private Transform playerTarget;
+    public Transform PlayerTarget
+    {
+        get => playerTarget;
+        set => playerTarget = value;
+    }
 
-    public LayerMask aoeLayerMask = ~0; // default to all layers; set to "Enemy" layer in Inspector
-
-    private Vector3 startPosition;
-    private float movementTimer = 0f;
-
-    private bool isStunned = false;
-    private bool isSlowed = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        startPosition = transform.position;
-        if (damageText != null)
-            damageText.text = damageTaken.ToString();
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            playerTarget = playerObj.transform;
+        }
+
+    }
+
+    public virtual void Attack()
+    {
+        EnableAttackHitbox();
+    }
+
+    public virtual void AttackEnd()
+    {
+        DisableAttackHitbox();
+    }
+
+    public void LoseHP(float damage)
+    {
+        float previousHealth = currentHealth;
+        SetHealth(currentHealth - damage);
+
+        float actualDamage = Mathf.Max(0f, previousHealth - currentHealth);
+    }
+
+    public virtual void SetHealth(float value)
+    {
+        currentHealth = Mathf.Clamp(value, 0, maxHealth);
+        CheckHealthThreshold();
+    }
+
+    public virtual void CheckHealthThreshold()
+    {
+        if (currentHealth <= 0f)
+        {
+            //die
+        };
+    }
+
+    protected virtual void DisableCollidersForDeath()
+    {
+        // Disable detection collider
+        if (detectionCollider != null)
+            detectionCollider.enabled = false;
+
+        // Disable attack collider
+        if (attackCollider != null)
+            attackCollider.enabled = false;
+
+        // Disable any other colliders on the main GameObject (used for lock-on)
+        var mainCollider = GetComponent<Collider>();
+        if (mainCollider != null && mainCollider != detectionCollider && mainCollider != attackCollider)
+            mainCollider.enabled = false;
     }
 
     // Update is called once per frame
-    void Update()
+    public void EnableAttackHitbox()
     {
-        if (isMovingXEnemy || isMovingZEnemy)
+        isAttackBoxActive = true;
+        if (attackCollider != null)
+            attackCollider.enabled = true;
+    }
+    public void DisableAttackHitbox()
+    {
+        isAttackBoxActive = false;
+        if (attackCollider != null)
+            attackCollider.enabled = false;
+    }
+
+    protected virtual void OnDrawGizmos()
+    {
+        // Detection range gizmo (sphere)
+        if (showDetectionGizmo)
         {
-            MoveEnemy();
+            float effectiveRange = GetEffectiveDetectionRange();
+            Gizmos.color = new Color(0f, 0.7f, 1f, 0.3f); // Cyan, semi-transparent
+            Gizmos.DrawWireSphere(transform.position, effectiveRange);
+            Gizmos.color = new Color(0f, 0.7f, 1f, 0.1f);
+            Gizmos.DrawSphere(transform.position, effectiveRange);
+        }
+
+        // Attack range gizmo (box)
+        if (showAttackGizmo)
+        {
+            Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.3f); // Red, semi-transparent
+            Vector3 boxCenter = transform.position + transform.forward * attackBoxDistance;
+            Gizmos.matrix = Matrix4x4.TRS(boxCenter, transform.rotation, Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, attackBoxSize);
+            Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.1f);
+            Gizmos.DrawCube(Vector3.zero, attackBoxSize);
+            Gizmos.matrix = Matrix4x4.identity;
+            // Also draw the effective attack range as a sphere for reference
+            float attackRange = (Mathf.Max(attackBoxSize.x, attackBoxSize.z) * 0.5f) + attackBoxDistance;
+            Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.2f);
+            Gizmos.DrawWireSphere(transform.position, attackRange);
         }
     }
 
-    // Public entrypoint kept for external callers (e.g. Bullet collision)
-    public void TakeDamage(BulletBehavior bullet)
+    protected float GetEffectiveDetectionRange()
     {
-        ApplyOnHitEffects(bullet, fromAOE: false);
+        if (detectionCollider != null)
+            return GetScaledRadius(detectionCollider);
+
+        return detectionRange;
     }
-
-    // Internal helper - fromAOE prevents re-triggering the AOE when propagating damage
-    private void ApplyOnHitEffects(BulletBehavior bullet, bool fromAOE)
+    private static float GetScaledRadius(SphereCollider collider)
     {
-        damageTaken = bullet.bulletDamage;
-        if (bullet.isStunBullet)
-        {
-            isStunned = true;
-            StartCoroutine(StunEffect());
-        }
-        if (bullet.isSlowBullet)
-        {
-            isSlowed = true;
-            StartCoroutine(SlowEffect());
-        }
+        if (collider == null)
+            return 0f;
 
-        if (bullet.isOpportunistBullet && (isStunned == true || isSlowed == true))
-        {
-            damageTaken *= 2;
-            Debug.Log("Enemy took opportunist damage");
-        }
+        Vector3 lossy = collider.transform.lossyScale;
+        float maxScale = Mathf.Max(Mathf.Abs(lossy.x), Mathf.Abs(lossy.y), Mathf.Abs(lossy.z));
+        if (maxScale <= 0f)
+            return collider.radius;
 
-        Debug.Log("Enemy took damage: " + damageTaken);
-        if (damageText != null)
-            damageText.text = damageTaken.ToString();
-
-        // Only trigger AOE once (when this call is the original hit)
-        if (bullet.isAOEBullet && !fromAOE)
-        {
-            if (bullet.isSlowBullet)
-            {
-                Instantiate(slowAOEExplosionVFX, transform.position, Quaternion.identity);
-                if (bullet.isStunBullet)
-                {
-                    Instantiate(stunAOEExplosionVFX, transform.position, Quaternion.identity);
-                }
-            }
-            if (bullet.isStunBullet)
-            {
-                Instantiate(stunAOEExplosionVFX, transform.position, Quaternion.identity);
-            }
-            else
-            { 
-                Instantiate(AOEExplosionVFX, transform.position, Quaternion.identity);
-            }
-            // Use the configured layer mask and radius. This avoids passing a layer index like '6'.
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, bullet.AOERadius, aoeLayerMask);
-            foreach (var hitCollider in hitColliders)
-            {
-                if (hitCollider == null)
-                    continue;
-
-                // Try to find an EnemyBehavior on the collider or its parent
-                EnemyBehavior enemy = hitCollider.GetComponent<EnemyBehavior>() ?? hitCollider.GetComponentInParent<EnemyBehavior>();
-                if (enemy == null)
-                    continue;
-
-                // Avoid re-applying to self
-                if (enemy == this)
-                    continue;
-
-                // Propagate damage but mark as fromAOE to avoid cascading AOE
-                enemy.ApplyOnHitEffects(bullet, fromAOE: true);
-            }
-        }
-    }
-
-    private IEnumerator SlowEffect()
-    {
-        yield return new WaitForSeconds(4f);
-        isSlowed = false;
-    }
-    private IEnumerator StunEffect()
-    {
-        yield return new WaitForSeconds(2f);
-        isStunned = false;
-    }
-
-    private void MoveEnemy()
-    {
-        // If stunned, don't modify position or the movement timer — this freezes the enemy in place
-        if (isStunned)
-            return;
-        if (isSlowed)
-        {
-            // Slow movement speed by half when slowed
-            movementTimer += Time.deltaTime * (moveSpeed / 2f);
-        }
-        else
-        {
-            // Advance a local movement timer instead of using Time.time directly.
-            // This preserves the current phase when paused (stunned) so the enemy doesn't snap back.
-            movementTimer += Time.deltaTime * moveSpeed;
-        }
-        if (isMovingXEnemy)
-        {
-            float xPosition = startPosition.x + Mathf.PingPong(movementTimer, moveDistance * 2) - moveDistance;
-            transform.position = new Vector3(xPosition, transform.position.y, transform.position.z);
-        }
-        if (isMovingZEnemy)
-        {
-            float zPosition = startPosition.z + Mathf.PingPong(movementTimer, moveDistance * 2) - moveDistance;
-            transform.position = new Vector3(transform.position.x, transform.position.y, zPosition);
-        }
-
+        return collider.radius * maxScale;
     }
 }
+
 

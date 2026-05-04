@@ -32,7 +32,7 @@ public class BulletBehavior : MonoBehaviour, IPoolable<BulletBehavior>
     private void HandleCollision(GameObject collidedObject)
     {
         if (collidedObject.CompareTag("Enemy"))
-            collidedObject.GetComponent<EnemyBehavior>().TakeDamage(this);
+            collidedObject.GetComponent<EnemyBehavior>().LoseHP(bulletDamage);
 
         ReturnRequested?.Invoke(this);
     }
