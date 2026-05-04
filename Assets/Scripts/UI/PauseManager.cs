@@ -7,6 +7,8 @@ public class PauseManager : MonoBehaviour
 {
     public static bool IsPaused {get; private set;}
 
+    [SerializeField] private PlayerInput pauseActionMap;
+
     [SerializeField] private InputActionReference pauseActionReference;
 
     [Space(10)]
@@ -45,13 +47,21 @@ public class PauseManager : MonoBehaviour
     {
         Time.timeScale = 0f;
         IsPaused = true;
+        SwapControls("UI");
         StartCoroutine(SlidePauseMenuIn());
+        
+    }
+
+    private void SwapControls(string swapMap)
+    {
+        pauseActionMap.SwitchCurrentActionMap(swapMap);
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1f;
         IsPaused = false;
+        SwapControls("Player");
         StartCoroutine(SlidePauseMenuOut());
     }
 
