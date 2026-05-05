@@ -139,11 +139,14 @@ namespace DeckBuilding
             // Draw two cards from the draw pile
             for (int i = 0; i < 2; i++)
             {
+                bool left = i == 0;
+
                 if (DrawPile.Count == 0)
                 {
                     if (DiscardPile.Count == 0)
                     {
                         // No cards left to draw
+                        Debug.Log("No cards left to draw!");
                         return;
                     }
 
@@ -154,7 +157,7 @@ namespace DeckBuilding
                 DrawPile.RemoveAt(DrawPile.Count - 1); // Remove it from the draw pile
 
                 // Add it to one of the slots in the player's hand.
-                if (i == 0)
+                if (left)
                     HandLeft = card;
                 else
                     HandRight = card;
