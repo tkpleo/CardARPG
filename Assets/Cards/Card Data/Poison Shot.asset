@@ -15,5 +15,6 @@ MonoBehaviour:
   cardName: Poison Shot
   description: On successful hit, enemy takes incremental damage.
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - {fileID: 11400000, guid: eb2237f5f2ec3e942977cff04bbaae25, type: 2}
   isUpgradable: 0
